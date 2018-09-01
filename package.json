@@ -1,0 +1,21 @@
+{
+  "name": "reddit-photo-fetch",
+  "version": "0.0.1",
+  "description": "PH",
+  "main": "build/index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LilithTundrus/reddit-photo-fetch.git"
+  },
+  "author": "Lilith Tundrus",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LilithTundrus/reddit-photo-fetch/issues"
+  },
+  "homepage": "https://github.com/LilithTundrus/reddit-photo-fetch#readme"
+}
