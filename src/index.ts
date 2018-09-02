@@ -10,6 +10,8 @@ import ReditFetchClient from './FetchClient';
 const configOptions = fs.readFileSync('../config.json').toString();
 const parsedConfigOptions = JSON.parse(configOptions);
 
+// TODO: just use snoo instead of using our own thing
+
 let client = new ReditFetchClient('reddit.com/', '');
 
 let authorizationURL: string = `${parsedConfigOptions.redditBaseURL}`;
