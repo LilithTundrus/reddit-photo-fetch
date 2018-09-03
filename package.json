@@ -5,7 +5,8 @@
   "main": "build/index.js",
   "dependencies": {
     "@types/request": "^2.47.1",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "snoowrap": "^1.15.2"
   },
   "devDependencies": {},
   "scripts": {
