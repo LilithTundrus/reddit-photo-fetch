@@ -3,7 +3,12 @@
   "version": "0.0.1",
   "description": "PH",
   "main": "build/index.js",
-  "dependencies": {},
+  "dependencies": {
+    "@types/request": "^2.47.1",
+    "@types/snoowrap": "^1.16.0",
+    "request": "^2.88.0",
+    "snoowrap": "^1.15.2"
+  },
   "devDependencies": {},
   "scripts": {
     "test": "npm test"
