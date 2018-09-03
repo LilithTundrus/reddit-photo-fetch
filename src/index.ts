@@ -3,9 +3,10 @@
 
 // Node/NPM requires and imports
 import * as fs from 'fs';
+import ReditFetchClient from './FetchClient';
 // Dirty import of the Reddit API wrapper because its typings aren't correct
 const snoowrap = require('snoowrap');
-import { refreshToken } from './refreshToken';
+
 
 // Options for the reddit client, contains the API plus subreddit config options
 // TODO: add typings for this
@@ -19,9 +20,13 @@ let wrapper = new snoowrap({
     refreshToken: parsedConfigOptions.redditRefreshToken
 });
 
-// Printing a list of the titles on the front page
-wrapper.getSubreddit('ArousingAvians').getNew().map(post => post.title).then(console.log);
+let rfc = new ReditFetchClient(wrapper);
 
+// Printing a list of the titles on the front page
+// wrapper.getSubreddit('ArousingAvians').getNew().map(post => post.title).then(console.log);
+
+
+console.log(rfc.getWrapper());
 
 // refreshToken(parsedConfigOptions, null, parsedConfigOptions.redditRefreshToken, (data) => {
     // Refresh the token using the information

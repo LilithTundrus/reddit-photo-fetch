@@ -1,17 +1,21 @@
 // Using ES5 strict mode
 'use strict';
 
+// Used to get the typings for snoowrapperInstance
+import * as snoowrap from 'snoowrap';
 export default class ReditFetchClient {
 
     // Base URL for fetching reddit data
-    private baseFetchURL: string;
-    private userAgent: string
+    private wrapper: snoowrap;
 
-    constructor(baseFetchURL: string, userAgent: string) {
-        this.baseFetchURL = baseFetchURL;
+    constructor(snooWrapperInstance) {
+        this.wrapper = snooWrapperInstance;
     }
 
-    getSubreddit(options) {
-        console.log(options);
+    // Test method
+    getWrapper() {
+        return this.wrapper;
     }
+
+
 }
