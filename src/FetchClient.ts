@@ -17,5 +17,14 @@ export default class ReditFetchClient {
         return this.wrapper;
     }
 
+    test() {
+        this.wrapper.getSubreddit('ArousingAvians').getNew().map((entry) => {
+            console.log(entry)
+        })
+    }
+
+
+    // This class will also help with doing stuff like checking if a post/image is
+    // new to the script/etc.
 
 }

@@ -26,7 +26,7 @@ let rfc = new ReditFetchClient(wrapper);
 // wrapper.getSubreddit('ArousingAvians').getNew().map(post => post.title).then(console.log);
 
 
-console.log(rfc.getWrapper());
+rfc.test()
 
 // refreshToken(parsedConfigOptions, null, parsedConfigOptions.redditRefreshToken, (data) => {
     // Refresh the token using the information
