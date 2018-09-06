@@ -19,7 +19,7 @@ export default class ReditFetchClient {
 
     test() {
         this.wrapper.getSubreddit('ArousingAvians').getNew().map((entry) => {
-            console.log(entry)
+            console.log(entry.url)
         })
     }
 
