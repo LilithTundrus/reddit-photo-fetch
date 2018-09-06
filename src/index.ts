@@ -7,25 +7,12 @@ import ReditFetchClient from './FetchClient';
 // Dirty import of the Reddit API wrapper because its typings aren't correct
 const snoowrap = require('snoowrap');
 
-
 // Options for the reddit client, contains the API plus subreddit config options
-// TODO: add typings for this
-let configOptions: string;
-
-if (fs.existsSync('../config.json')) {
-    let rawConfigOptions = fs.readFileSync('../config.json');
-    configOptions = rawConfigOptions.toString();
-} else {
-    console.log('Error: Could not find config file (../config.json or ./config.json');
-    process.exit(1);
-}
-
-// Try to parse the contents
-const parsedConfigOptions = JSON.parse(configOptions);
+let configOptions = readConfigFile();
+const parsedConfigOptions = parseCondigJSONFromString(configOptions);
 
 
 // This handles a lot of stuff for us (like token refreshing)
-
 let wrapper = new snoowrap({
     // Custom required useragent string for any Reddit project
     userAgent: parsedConfigOptions.redditUserAgent,
@@ -38,5 +25,34 @@ let wrapper = new snoowrap({
 });
 
 let rfc = new ReditFetchClient(wrapper);
-
 rfc.test();
+
+
+/** Read the config file for the script/project
+ * @returns {string}
+ */
+function readConfigFile(): string {
+    if (fs.existsSync('../config.json')) {
+        let rawConfigOptions = fs.readFileSync('../config.json');
+        return rawConfigOptions.toString();
+    } else {
+        console.log('Error: Could not find config file (../config.json or ./config.json');
+        // Exit on this error, since the file is needed
+        return process.exit(1);
+    }
+}
+
+/** Parse the config JSON from the string from the `readConfigFile()` function
+ * @param {string} fileString
+ * @returns {object}
+ */
+// TODO: add typings for thiss
+function parseCondigJSONFromString(fileString: string): any {
+    // Try to parse the contents
+    try {
+        return JSON.parse(fileString);
+    } catch (e) {
+        console.log('Could not parse JSON from given file string');
+        return process.exit(0);
+    }
+}
