@@ -10,32 +10,33 @@ const snoowrap = require('snoowrap');
 
 // Options for the reddit client, contains the API plus subreddit config options
 // TODO: add typings for this
-const configOptions = fs.readFileSync('../config.json').toString();
+let configOptions: string;
+
+if (fs.existsSync('../config.json')) {
+    let rawConfigOptions = fs.readFileSync('../config.json');
+    configOptions = rawConfigOptions.toString();
+} else {
+    console.log('Error: Could not find config file (../config.json or ./config.json');
+    process.exit(1);
+}
+
+// Try to parse the contents
 const parsedConfigOptions = JSON.parse(configOptions);
 
+
+// This handles a lot of stuff for us (like token refreshing)
+
 let wrapper = new snoowrap({
+    // Custom required useragent string for any Reddit project
     userAgent: parsedConfigOptions.redditUserAgent,
+    // ID of the 'Application' -- pulled from the Reddit Applications panel
     clientId: parsedConfigOptions.redditClientID,
+    // Secret key for the Reddit porject
     clientSecret: parsedConfigOptions.redditSecret,
+    // Refresh token for your project
     refreshToken: parsedConfigOptions.redditRefreshToken
 });
 
 let rfc = new ReditFetchClient(wrapper);
 
-// Printing a list of the titles on the front page
-// wrapper.getSubreddit('ArousingAvians').getNew().map(post => post.title).then(console.log);
-
-
-rfc.test()
-
-// refreshToken(parsedConfigOptions, null, parsedConfigOptions.redditRefreshToken, (data) => {
-    // Refresh the token using the information
-
-//     console.log(data)
-//     console.log(2)
-// })
-
-
-// Write the new token to file
-
-// Do what we need here
+rfc.test();
