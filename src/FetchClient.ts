@@ -15,14 +15,24 @@ export default class ReditFetchClient {
     // Base URL for fetching reddit data
     private wrapper: snoowrap;
     private downloadDirectory: string;
+    // TODO: Add typings to this
+    private configJSON: any;
+    private configFileDirectory: string;
 
-    constructor(snooWrapperInstance, downloadDirectory) {
+    constructor(snooWrapperInstance, downloadDirectory, configJSON, configFileDirectory) {
         this.wrapper = snooWrapperInstance;
         this.downloadDirectory = downloadDirectory;
+        this.configJSON = configJSON;
+        this.configFileDirectory = configFileDirectory;
 
         // If the directory to write downloaded files to does not exist, throw an error
         if (!fs.existsSync(this.downloadDirectory)) {
             throw new Error(`${downloadDirectory} is not a valid directory to write to.`);
+        }
+
+        // If the location for the config file does not exist, throw an error
+        if (!fs.existsSync(this.configFileDirectory)) {
+            throw new Error(`${configFileDirectory} is not a valid directory to write to.`);
         }
     }
 
@@ -38,7 +48,7 @@ export default class ReditFetchClient {
         })
     }
 
-    getNewRedditURLs(subReddits: string[]) {
+    getNewRedditURLs() {
         /* 
         How the actual code would work:
         Take the array, match each subreddit URL to the currently indexed subreddits
@@ -46,6 +56,10 @@ export default class ReditFetchClient {
         Else, if the subreddit is already registered, just run a diff check on the links
         for each new link, download the image/file
         */
+
+        this.configJSON.subreddits.forEach((subReddit) => {
+            console.log(subReddit);
+        });
     }
 
     // This works on all images/binary files (I hope)
