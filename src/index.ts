@@ -3,34 +3,60 @@
 
 // Node/NPM requires and imports
 import * as fs from 'fs';
+import ReditFetchClient from './FetchClient';
 // Dirty import of the Reddit API wrapper because its typings aren't correct
 const snoowrap = require('snoowrap');
-import { refreshToken } from './refreshToken';
 
 // Options for the reddit client, contains the API plus subreddit config options
-// TODO: add typings for this
-const configOptions = fs.readFileSync('../config.json').toString();
-const parsedConfigOptions = JSON.parse(configOptions);
+let configOptions = readConfigFile();
+const parsedConfigOptions = parseCondigJSONFromString(configOptions);
 
+// This handles a lot of stuff for us (like token refreshing)
 let wrapper = new snoowrap({
+    // Custom required useragent string for any Reddit project
     userAgent: parsedConfigOptions.redditUserAgent,
+    // ID of the 'Application' -- pulled from the Reddit Applications panel
     clientId: parsedConfigOptions.redditClientID,
+    // Secret key for the Reddit porject
     clientSecret: parsedConfigOptions.redditSecret,
+    // Refresh token for your project
     refreshToken: parsedConfigOptions.redditRefreshToken
 });
 
-// Printing a list of the titles on the front page
-wrapper.getSubreddit('ArousingAvians').getNew().map(post => post.title).then(console.log);
+let rfc = new ReditFetchClient(wrapper, './');
+// rfc.test();
+
+rfc.downloadImage('https://i.imgur.com/PEVrfl1.png', './PEVrfl1.png', () => {
+    console.log('aaa')
+})
 
 
-// refreshToken(parsedConfigOptions, null, parsedConfigOptions.redditRefreshToken, (data) => {
-    // Refresh the token using the information
 
-//     console.log(data)
-//     console.log(2)
-// })
+/** Read the config file for the script/project
+ * @returns {string}
+ */
+function readConfigFile(): string {
+    if (fs.existsSync('../config.json')) {
+        let rawConfigOptions = fs.readFileSync('../config.json');
+        return rawConfigOptions.toString();
+    } else {
+        console.log('Error: Could not find config file (../config.json or ./config.json');
+        // Exit on this error, since the file is needed
+        return process.exit(1);
+    }
+}
 
-
-// Write the new token to file
-
-// Do what we need here
+/** Parse the config JSON from the string from the `readConfigFile()` function
+ * @param {string} fileString
+ * @returns {object}
+ */
+// TODO: add typings for thiss
+function parseCondigJSONFromString(fileString: string): any {
+    // Try to parse the contents
+    try {
+        return JSON.parse(fileString);
+    } catch (e) {
+        console.log('Could not parse JSON from given file string');
+        return process.exit(0);
+    }
+}
