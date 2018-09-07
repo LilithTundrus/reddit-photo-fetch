@@ -11,7 +11,6 @@ const snoowrap = require('snoowrap');
 let configOptions = readConfigFile();
 const parsedConfigOptions = parseCondigJSONFromString(configOptions);
 
-
 // This handles a lot of stuff for us (like token refreshing)
 let wrapper = new snoowrap({
     // Custom required useragent string for any Reddit project
