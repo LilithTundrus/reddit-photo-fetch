@@ -49,9 +49,6 @@ export default class ReditFetchClient {
     }
 
     // This works on all images/binary files (I hope)
-
-    // TODO: Have this make sure that what URL it's pulling is actually a raw image file
-    // If not, call something else to actually get the contents
     downloadImage(uri, filename) {
         return new Promise((resolve, reject) => {
             // Really not sure what this is ued for but I think it's requesting things in a very special way
