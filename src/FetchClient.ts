@@ -41,7 +41,10 @@ export default class ReditFetchClient {
     getNewRedditURLs(subReddits: string[]) {
         /* 
         How the actual code would work:
-        Take the array, match it to any existing
+        Take the array, match each subreddit URL to the currently indexed subreddits
+        If a subreddit is new, just get the first page of images/links
+        Else, if the subreddit is already registered, just run a diff check on the links
+        for each new link, download the image/file
         */
     }
 
@@ -49,15 +52,25 @@ export default class ReditFetchClient {
 
     // TODO: Have this make sure that what URL it's pulling is actually a raw image file
     // If not, call something else to actually get the contents
-    downloadImage(uri, filename, callback) {
-        // Really not sure what this is ued for but I think it's requesting things in a very special way
-        request.head(uri, function (err, res, body) {
-            // console.log('content-type:', res.headers['content-type']);
-            // console.log('content-length:', res.headers['content-length']);
+    downloadImage(uri, filename) {
+        return new Promise((resolve, reject) => {
+            // Really not sure what this is ued for but I think it's requesting things in a very special way
+            request.head(uri, function (err, res, body) {
+                if (res.headers) {
+                    return reject('Response had headers (Not a raw image), use PH to parse for images');
+                }
 
-            request.get(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
-        });
+                request.get(uri).pipe(fs.createWriteStream(filename)).on('close', () => {
+                    resolve('File saved');
+                });
+            });
+        })
+
     };
+
+    downloadGyfcatVideo() {
+        // Parse a gyfcat for the mp4 URL to download
+    }
 
     // This class will also help with doing stuff like checking if a post/image is
     // new to the script/etc.
