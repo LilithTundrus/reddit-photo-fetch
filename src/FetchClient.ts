@@ -56,12 +56,12 @@ export default class ReditFetchClient {
         return new Promise((resolve, reject) => {
             // Really not sure what this is ued for but I think it's requesting things in a very special way
             request.head(uri, function (err, res, body) {
-                if (res.headers) {
-                    return reject('Response had headers (Not a raw image), use PH to parse for images');
+                if (res.body) {
+                    return reject('Response had a body (Not a raw image), use PH to parse for images');
                 }
 
                 request.get(uri).pipe(fs.createWriteStream(filename)).on('close', () => {
-                    resolve('File saved');
+                    return resolve('File saved');
                 });
             });
         })
