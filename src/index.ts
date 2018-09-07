@@ -23,8 +23,13 @@ let wrapper = new snoowrap({
     refreshToken: parsedConfigOptions.redditRefreshToken
 });
 
-let rfc = new ReditFetchClient(wrapper);
-rfc.test();
+let rfc = new ReditFetchClient(wrapper, './');
+// rfc.test();
+
+rfc.downloadtest('https://i.imgur.com/K33WFR4.jpg', './test.jpg', () => {
+    console.log('aaa')
+})
+
 
 
 /** Read the config file for the script/project
