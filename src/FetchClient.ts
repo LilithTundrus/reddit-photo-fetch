@@ -45,24 +45,9 @@ export default class ReditFetchClient {
         */
     }
 
-    // Attempt to dowload a .jpg image from a given URL
-    downloadJPG(url) {
-        request.get(url).then((res) => {
-
-            console.log(res)
-
-            // const buffer = Buffer.from(res, 'bin');
-
-            // console.log(buffer)
-            fs.writeFileSync('./test.jpg', res, 'binary');
-
-            // fs.writeFileSync(this.downloadDirectory + 'test.jpg', res)
-            // console.log('content-type:', res.headers['content-type']);
-            // console.log('content-length:', res.headers['content-length']);
-        });
-    }
-
-    downloadtest(uri, filename, callback) {
+    // This works on all images/binary files (I hope)
+    downloadImage(uri, filename, callback) {
+        // Really not sure what this is ued for but I think it's requesting things in a very special way
         request.head(uri, function (err, res, body) {
             // console.log('content-type:', res.headers['content-type']);
             // console.log('content-length:', res.headers['content-length']);
@@ -70,7 +55,6 @@ export default class ReditFetchClient {
             request.get(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
         });
     };
-
 
     // This class will also help with doing stuff like checking if a post/image is
     // new to the script/etc.
