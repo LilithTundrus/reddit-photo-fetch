@@ -26,7 +26,7 @@ let wrapper = new snoowrap({
 let rfc = new ReditFetchClient(wrapper, './');
 // rfc.test();
 
-rfc.downloadtest('https://i.imgur.com/K33WFR4.jpg', './test.jpg', () => {
+rfc.downloadImage('https://i.imgur.com/PEVrfl1.png', './PEVrfl1.png', () => {
     console.log('aaa')
 })
 
