@@ -66,7 +66,6 @@ export default class ReditFetchClient {
         let promiseChain = Promise.resolve();
 
         this.configJSON.subreddits.forEach((subReddit) => {
-            let newIndex: string[] = [];
 
             promiseChain = promiseChain.then(() => {
                 console.log(subReddit);
@@ -74,30 +73,32 @@ export default class ReditFetchClient {
                 let getNewOptions: any;
                 getNewOptions = { limit: 25 };
 
-                return this.wrapper.getSubreddit(subReddit).getNew(getNewOptions).map((entry) => {
+                let urls = this.wrapper.getSubreddit(subReddit).getNew(getNewOptions).filter((entry) => {
                     // TODO: Support more formats!!
                     // First, make sure the URL is a supported image format
-                    // For each of these entries, make sure that the file is new
                     if (entry.url.includes('.jpg') || entry.url.includes('.png')) {
-                        // Check if the currently iterated subreddit is indexed
-                        if (this.getSubredditPostIndex(subReddit) !== undefined) {
-                            // Update the index
-                            newIndex.push(entry.url);
-
-                            // Get each image and download it
-                        } else {
-                            // Create the index and save it
-                        }
-
-                        //return this.downloadImage(entry.url, this.downloadDirectory + entry.url.split('/')[entry.url.split('/').length - 1]);
+                        console.log(entry.url)
+                        return entry.url;
                     } else {
                         // Debugging
-                        console.log(entry.url);
+                        console.log('Invalid image link: ' + entry.url);
                     }
-                })
-            }).then((data) => {
-                console.log(data);
+                });
 
+                urls.forEach((url) => {
+                    // Check if the currently iterated subreddit is indexed
+                    if (this.getSubredditPostIndex(subReddit) !== undefined) {
+                        console.log(url)
+                        // Check if the current URL exists in the array
+                        // Update the index
+
+
+                        // Get each image and download it
+                        //return this.downloadImage(entry.url, this.downloadDirectory + entry.url.split('/')[entry.url.split('/').length - 1]);
+                    } else {
+                        // Create the index and save it
+                    }
+                });
             })
         });
         return promiseChain;
