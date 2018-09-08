@@ -84,9 +84,9 @@ export default class ReditFetchClient {
                     }
                 });
 
-                // If the subreddit is not yet registered
+                // If the subreddit is not yet registered, this will do so
                 if (!this.getSubredditPostIndex(subreddit)) {
-                    // Register the subreddit (push it to the registeredSubreddits array of the configJSON)
+                    this.addRegisteredSubreddit(subreddit);
                 }
 
                 // urls.forEach((url) => {
@@ -145,13 +145,13 @@ export default class ReditFetchClient {
         });
         if (matchedRegisteredSubreddit) {
             return;
-        };
+        }
 
         this.configJSON.registeredSubreddits.push({
             "name": newSubredditName,
             "lastPolledPosts": []
         });
-        fs.writeFileSync(this.configFileDirectory, JSON.stringify(this.configJSON, null, 2))
+        fs.writeFileSync(this.configFileDirectory, JSON.stringify(this.configJSON, null, 2));
     }
 
     updateSubredditPostIndex(subredditName: string, newPostIndex: string[]) {
