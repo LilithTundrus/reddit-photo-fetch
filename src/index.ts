@@ -23,15 +23,16 @@ let wrapper = new snoowrap({
     refreshToken: parsedConfigOptions.redditRefreshToken
 });
 
-let rfc = new ReditFetchClient(wrapper, './', parsedConfigOptions, '../config.json');
-rfc.test();
+// TODO: Have the download dir be either configurable or a CLI argument
+let rfc = new ReditFetchClient(wrapper, './test/', parsedConfigOptions, '../config.json');
+// rfc.test();
 
 // rfc.downloadImage('https://giant.gfycat.com/DearestQuickBear.webm', './DearestQuickBear.webm')
 //     .then((response) => {
 //         console.log(response);
 //     })
 
-rfc.getNewRedditURLs()
+rfc.getNewRedditURLs();
 
 
 /** Read the config file for the script/project

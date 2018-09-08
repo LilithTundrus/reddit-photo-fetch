@@ -3,6 +3,7 @@
 
 // Node/NPM requires and imports
 import * as fs from 'fs';
+
 // Used to get the typings for snoowrapperInstance
 import * as snoowrap from 'snoowrap';
 // Used for GET tasks for the fetchClient
@@ -36,13 +37,15 @@ export default class ReditFetchClient {
         }
     }
 
-    // Test method
+    /** Get the class's instance of Snoowrap
+     * @returns {snoowrap}
+     * @memberof ReditFetchClient
+     */
     getWrapper() {
         return this.wrapper;
     }
 
-    // Another test method
-
+    // Test method
     test() {
         // Since the typings for snoowrap are a bit off, this object needs to be created
         let getNewOptions: any;
@@ -64,14 +67,16 @@ export default class ReditFetchClient {
 
         this.configJSON.subreddits.forEach((subReddit) => {
             console.log(subReddit);
-
+            // Get the subreddit's FIRST 50 of newest content
             let getNewOptions: any;
-            getNewOptions = { limit: 25 }
+            getNewOptions = { limit: 25 };
             this.wrapper.getSubreddit(subReddit).getNew(getNewOptions).map((entry) => {
+                // For each of these entries, make sure that the file is new
                 console.log(entry.url);
-            });
-            // Get the subreddit's FIRST PAGE of newest content
-            // TODO: If there's more than one page, set something like a hard limit of 50
+                if (entry.url.includes('.jpg') || entry.url.includes('.jpg')) {
+                    return this.downloadImage(entry.url, this.downloadDirectory + entry.url.split('/')[entry.url.split('/').length - 1]);
+                }
+            })
         });
     }
 
@@ -81,7 +86,7 @@ export default class ReditFetchClient {
             // Really not sure what this is ued for but I think it's requesting things in a very special way
             request.head(uri, function (err, res, body) {
                 if (res.body) {
-                    return reject('Response had a body (Not a raw image), use PH to parse for images');
+                    return reject('Response had a body (Not a raw image), use downloadGyfcatVideo() or PH to parse for images');
                 }
 
                 request.get(uri).pipe(fs.createWriteStream(filename)).on('close', () => {
@@ -89,7 +94,6 @@ export default class ReditFetchClient {
                 });
             });
         })
-
     };
 
     downloadGyfcatVideo() {
@@ -98,5 +102,17 @@ export default class ReditFetchClient {
 
     // This class will also help with doing stuff like checking if a post/image is
     // new to the script/etc.
+
+    getSubredditPostIndex(subRedditName: string) {
+        // Check if a postIndex from the config file for a subreddit already exists
+    }
+
+    updateConfigSubredditPostIndex(subRedditName: string) {
+        // Find the given array of posts in the config JSON
+
+        // If it doesn't exist, create it
+
+        // Update it and write it to file
+    }
 
 }
