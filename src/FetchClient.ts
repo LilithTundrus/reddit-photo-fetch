@@ -65,19 +65,18 @@ export default class ReditFetchClient {
         */
         let promiseChain = Promise.resolve();
 
-        this.configJSON.subreddits.forEach((subReddit) => {
+        this.configJSON.subreddits.forEach((subreddit) => {
 
             promiseChain = promiseChain.then(() => {
-                console.log(subReddit);
+                console.log(subreddit);
                 // Get the subreddit's FIRST 50 of newest content
                 let getNewOptions: any;
                 getNewOptions = { limit: 25 };
 
-                let urls = this.wrapper.getSubreddit(subReddit).getNew(getNewOptions).filter((entry) => {
+                let urls = this.wrapper.getSubreddit(subreddit).getNew(getNewOptions).map((entry) => {
                     // TODO: Support more formats!!
                     // First, make sure the URL is a supported image format
                     if (entry.url.includes('.jpg') || entry.url.includes('.png')) {
-                        console.log(entry.url)
                         return entry.url;
                     } else {
                         // Debugging
@@ -85,20 +84,25 @@ export default class ReditFetchClient {
                     }
                 });
 
-                urls.forEach((url) => {
-                    // Check if the currently iterated subreddit is indexed
-                    if (this.getSubredditPostIndex(subReddit) !== undefined) {
-                        console.log(url)
-                        // Check if the current URL exists in the array
-                        // Update the index
+                // If the subreddit is not yet registered
+                if (!this.getSubredditPostIndex(subreddit)) {
+                    // Register the subreddit (push it to the registeredSubreddits array of the configJSON)
+                }
+
+                // urls.forEach((url) => {
+                //     // Check if the currently iterated subreddit is indexed
+                //     if (this.getSubredditPostIndex(subreddit) !== undefined) {
+                //         console.log(url)
+                //         // Check if the current URL exists in the array
+                //         // Update the index
 
 
-                        // Get each image and download it
-                        //return this.downloadImage(entry.url, this.downloadDirectory + entry.url.split('/')[entry.url.split('/').length - 1]);
-                    } else {
-                        // Create the index and save it
-                    }
-                });
+                //         // Get each image and download it
+                //         //return this.downloadImage(entry.url, this.downloadDirectory + entry.url.split('/')[entry.url.split('/').length - 1]);
+                //     } else {
+                //         // Create the index and save it
+                //     }
+                // });
             })
         });
         return promiseChain;
@@ -127,14 +131,30 @@ export default class ReditFetchClient {
     // This class will also help with doing stuff like checking if a post/image is
     // new to the script/etc.
 
-    getSubredditPostIndex(subRedditName: string) {
+    getSubredditPostIndex(subredditName: string) {
         // Check if a postIndex from the config file for a subreddit already exists
         return this.configJSON.registeredSubreddits.find((entry) => {
-            return entry.name === subRedditName;
+            return entry.name === subredditName;
         });
     }
 
-    updateConfigSubredditPostIndex(subRedditName: string, newPostIndex: string[]) {
+    addRegisteredSubreddit(newSubredditName) {
+        // Sanity check
+        let matchedRegisteredSubreddit = this.configJSON.registeredSubreddits.find((entry) => {
+            return entry.name === newSubredditName;
+        });
+        if (matchedRegisteredSubreddit) {
+            return;
+        };
+
+        this.configJSON.registeredSubreddits.push({
+            "name": newSubredditName,
+            "lastPolledPosts": []
+        });
+        fs.writeFileSync(this.configFileDirectory, JSON.stringify(this.configJSON, null, 2))
+    }
+
+    updateSubredditPostIndex(subredditName: string, newPostIndex: string[]) {
         // Find the given array of posts in the config JSON
 
         // If it doesn't exist, create it
