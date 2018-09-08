@@ -9,7 +9,7 @@ import * as snoowrap from 'snoowrap';
 // Used for GET tasks for the fetchClient
 import * as request from 'request-promise';
 
-request.defaults({ encoding: null })
+request.defaults({ encoding: null });
 
 export default class ReditFetchClient {
 
@@ -66,18 +66,41 @@ export default class ReditFetchClient {
         let promiseChain = Promise.resolve();
 
         this.configJSON.subreddits.forEach((subReddit) => {
-            console.log(subReddit);
-            // Get the subreddit's FIRST 50 of newest content
-            let getNewOptions: any;
-            getNewOptions = { limit: 25 };
-            this.wrapper.getSubreddit(subReddit).getNew(getNewOptions).map((entry) => {
-                // For each of these entries, make sure that the file is new
-                console.log(entry.url);
-                if (entry.url.includes('.jpg') || entry.url.includes('.jpg')) {
-                    return this.downloadImage(entry.url, this.downloadDirectory + entry.url.split('/')[entry.url.split('/').length - 1]);
-                }
+            let newIndex: string[] = [];
+
+            promiseChain = promiseChain.then(() => {
+                console.log(subReddit);
+                // Get the subreddit's FIRST 50 of newest content
+                let getNewOptions: any;
+                getNewOptions = { limit: 25 };
+
+                return this.wrapper.getSubreddit(subReddit).getNew(getNewOptions).map((entry) => {
+                    // TODO: Support more formats!!
+                    // First, make sure the URL is a supported image format
+                    // For each of these entries, make sure that the file is new
+                    if (entry.url.includes('.jpg') || entry.url.includes('.png')) {
+                        // Check if the currently iterated subreddit is indexed
+                        if (this.getSubredditPostIndex(subReddit) !== undefined) {
+                            // Update the index
+                            newIndex.push(entry.url);
+
+                            // Get each image and download it
+                        } else {
+                            // Create the index and save it
+                        }
+
+                        //return this.downloadImage(entry.url, this.downloadDirectory + entry.url.split('/')[entry.url.split('/').length - 1]);
+                    } else {
+                        // Debugging
+                        console.log(entry.url);
+                    }
+                })
+            }).then((data) => {
+                console.log(data);
+
             })
         });
+        return promiseChain;
     }
 
     // This works on all images/binary files (I hope)
@@ -105,14 +128,16 @@ export default class ReditFetchClient {
 
     getSubredditPostIndex(subRedditName: string) {
         // Check if a postIndex from the config file for a subreddit already exists
+        return this.configJSON.registeredSubreddits.find((entry) => {
+            return entry.name === subRedditName;
+        });
     }
 
-    updateConfigSubredditPostIndex(subRedditName: string) {
+    updateConfigSubredditPostIndex(subRedditName: string, newPostIndex: string[]) {
         // Find the given array of posts in the config JSON
 
         // If it doesn't exist, create it
 
         // Update it and write it to file
     }
-
 }
