@@ -42,9 +42,13 @@ export default class ReditFetchClient {
     }
 
     // Another test method
+
     test() {
-        this.wrapper.getSubreddit('ArousingAvians').getNew().map((entry) => {
-            console.log(entry.url)
+        // Since the typings for snoowrap are a bit off, this object needs to be created
+        let getNewOptions: any;
+        getNewOptions = { limit: 5 }
+        this.wrapper.getSubreddit('ArousingAvians').getNew(getNewOptions).map((entry) => {
+            console.log(entry.url);
         })
     }
 
@@ -56,9 +60,18 @@ export default class ReditFetchClient {
         Else, if the subreddit is already registered, just run a diff check on the links
         for each new link, download the image/file
         */
+        let promiseChain = Promise.resolve();
 
         this.configJSON.subreddits.forEach((subReddit) => {
             console.log(subReddit);
+
+            let getNewOptions: any;
+            getNewOptions = { limit: 25 }
+            this.wrapper.getSubreddit(subReddit).getNew(getNewOptions).map((entry) => {
+                console.log(entry.url);
+            });
+            // Get the subreddit's FIRST PAGE of newest content
+            // TODO: If there's more than one page, set something like a hard limit of 50
         });
     }
 

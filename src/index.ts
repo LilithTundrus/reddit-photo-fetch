@@ -23,14 +23,15 @@ let wrapper = new snoowrap({
     refreshToken: parsedConfigOptions.redditRefreshToken
 });
 
-let rfc = new ReditFetchClient(wrapper, './');
-// rfc.test();
+let rfc = new ReditFetchClient(wrapper, './', parsedConfigOptions, '../config.json');
+rfc.test();
 
-rfc.downloadImage('https://giant.gfycat.com/DearestQuickBear.webm', './DearestQuickBear.webm')
-    .then((response) => {
-        console.log(response);
-    })
+// rfc.downloadImage('https://giant.gfycat.com/DearestQuickBear.webm', './DearestQuickBear.webm')
+//     .then((response) => {
+//         console.log(response);
+//     })
 
+rfc.getNewRedditURLs()
 
 
 /** Read the config file for the script/project
