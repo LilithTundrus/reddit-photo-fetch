@@ -15,25 +15,22 @@ const parsedConfigOptions = parseCondigJSONFromString(configOptions);
 let wrapper = new snoowrap({
     // Custom required useragent string for any Reddit project
     userAgent: parsedConfigOptions.redditUserAgent,
-    // ID of the 'Application' -- pulled from the Reddit Applications panel
+    // ID of the 'Application' (pulled from the Reddit Applications panel)
     clientId: parsedConfigOptions.redditClientID,
     // Secret key for the Reddit porject
     clientSecret: parsedConfigOptions.redditSecret,
-    // Refresh token for your project
+    // Refresh token for the project
     refreshToken: parsedConfigOptions.redditRefreshToken
 });
 
 // TODO: Have the download dir be either configurable or a CLI argument
 let rfc = new ReditFetchClient(wrapper, './test/', parsedConfigOptions, '../config.json');
-// rfc.test();
-
-// rfc.downloadImage('https://giant.gfycat.com/DearestQuickBear.webm', './DearestQuickBear.webm')
-//     .then((response) => {
-//         console.log(response);
-//     })
 
 rfc.getNewRedditURLs();
 
+
+
+// Helper functions go here
 
 /** Read the config file for the script/project
  * @returns {string}
