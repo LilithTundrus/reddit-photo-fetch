@@ -45,16 +45,6 @@ export default class ReditFetchClient {
         return this.wrapper;
     }
 
-    // Test method
-    test() {
-        // Since the typings for snoowrap are a bit off, this object needs to be created
-        let getNewOptions: any;
-        getNewOptions = { limit: 5 }
-        this.wrapper.getSubreddit('ArousingAvians').getNew(getNewOptions).map((entry) => {
-            console.log(entry.url);
-        })
-    }
-
     getNewRedditURLs() {
         /* 
         How the actual code would work:
@@ -156,9 +146,16 @@ export default class ReditFetchClient {
 
     updateSubredditPostIndex(subredditName: string, newPostIndex: string[]) {
         // Find the given array of posts in the config JSON
+        let matchedRegisteredSubreddit = this.configJSON.registeredSubreddits.find((entry) => {
+            return entry.name === subredditName;
+        });
+        // If it doesn't exist, create it (maybe)? --should just sanity check it
 
-        // If it doesn't exist, create it
+        matchedRegisteredSubreddit.lastPolledPosts = newPostIndex;
+
+        this.configJSON.registeredSubreddits[subredditName] = matchedRegisteredSubreddit;
 
         // Update it and write it to file
+        fs.writeFileSync(this.configFileDirectory, JSON.stringify(this.configJSON, null, 2));
     }
 }
