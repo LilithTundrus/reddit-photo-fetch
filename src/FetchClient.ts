@@ -56,44 +56,24 @@ export default class ReditFetchClient {
         let promiseChain = Promise.resolve();
 
         this.configJSON.subreddits.forEach((subreddit) => {
-
-            promiseChain = promiseChain.then(() => {
-                console.log(subreddit);
-                // Get the subreddit's FIRST 50 of newest content
-                let getNewOptions: any;
-                getNewOptions = { limit: 25 };
-
-                let urls = this.wrapper.getSubreddit(subreddit).getNew(getNewOptions).map((entry) => {
-                    // TODO: Support more formats!!
-                    // First, make sure the URL is a supported image format
-                    if (entry.url.includes('.jpg') || entry.url.includes('.png')) {
-                        return entry.url;
-                    } else {
-                        // Debugging
-                        console.log('Invalid image link: ' + entry.url);
-                    }
-                });
-
-                // If the subreddit is not yet registered, this will do so
-                if (!this.getSubredditPostIndex(subreddit)) {
-                    this.addRegisteredSubreddit(subreddit);
-                }
-
-                // urls.forEach((url) => {
-                //     // Check if the currently iterated subreddit is indexed
-                //     if (this.getSubredditPostIndex(subreddit) !== undefined) {
-                //         console.log(url)
-                //         // Check if the current URL exists in the array
-                //         // Update the index
-
-
-                //         // Get each image and download it
-                //         //return this.downloadImage(entry.url, this.downloadDirectory + entry.url.split('/')[entry.url.split('/').length - 1]);
-                //     } else {
-                //         // Create the index and save it
-                //     }
-                // });
-            })
+            promiseChain = promiseChain
+                .then(() => {
+                    return this.parseUrlsFromPosts(subreddit);
+                })
+                .then((urls) => {
+                    urls.forEach((url) => {
+                        // Check if the currently iterated subreddit has an index set
+                        if (this.getSubredditPostIndex(subreddit) !== undefined) {
+                            console.log(url)
+                            // Check if the current URL exists in the array
+                            // Update the index
+                            // Get each image and download it
+                            //return this.downloadImage(entry.url, this.downloadDirectory + entry.url.split('/')[entry.url.split('/').length - 1]);
+                        } else {
+                            // Create the index and save it
+                        }
+                    });
+                })
         });
         return promiseChain;
     }
@@ -150,12 +130,39 @@ export default class ReditFetchClient {
             return entry.name === subredditName;
         });
         // If it doesn't exist, create it (maybe)? --should just sanity check it
-
         matchedRegisteredSubreddit.lastPolledPosts = newPostIndex;
 
         this.configJSON.registeredSubreddits[subredditName] = matchedRegisteredSubreddit;
 
         // Update it and write it to file
         fs.writeFileSync(this.configFileDirectory, JSON.stringify(this.configJSON, null, 2));
+    }
+
+    private parseUrlsFromPosts(subreddit) {
+        // Get the subreddit's FIRST 50 of newest content
+        let getNewOptions: any;
+        getNewOptions = { limit: 25 };
+
+        let urls = this.wrapper.getSubreddit(subreddit).getNew(getNewOptions).map((entry) => {
+            // TODO: Support more formats!!
+            // First, make sure the URL is a supported image format
+            if (entry.url.includes('.jpg') || entry.url.includes('.png')) {
+                return entry.url;
+            } else {
+                // Debugging
+                console.log('Invalid image link: ' + entry.url);
+            }
+        });
+
+        // If the subreddit is not yet registered, this will do so
+        if (!this.getSubredditPostIndex(subreddit)) {
+            this.addRegisteredSubreddit(subreddit);
+        }
+
+        urls = urls.filter((entry) => {
+            return entry !== undefined;
+        });
+
+        return urls;
     }
 }
