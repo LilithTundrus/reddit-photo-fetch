@@ -33,7 +33,7 @@ export default class ReditFetchClient {
 
         // If the location for the config file does not exist, throw an error
         if (!fs.existsSync(this.configFileDirectory)) {
-            throw new Error(`${configFileDirectory} is not a valid directory to write to.`);
+            throw new Error(`${configFileDirectory} is not a valid config file to write to.`);
         }
     }
 
@@ -47,43 +47,60 @@ export default class ReditFetchClient {
 
     getNewRedditURLs() {
         /* 
-        How the actual code would work:
         Take the array, match each subreddit URL to the currently indexed subreddits
         If a subreddit is new, just get the first page of images/links
         Else, if the subreddit is already registered, just run a diff check on the links
         for each new link, download the image/file
         */
+
+        // Promise chain to attach each subreddit check to
         let promiseChain = Promise.resolve();
 
         this.configJSON.subreddits.forEach((subreddit) => {
             promiseChain = promiseChain
                 .then(() => {
+                    // Get an array of URLs from each post
                     return this.parseUrlsFromPosts(subreddit);
                 })
                 .then((urls) => {
+                    let subredditPostIndex = this.getSubredditPostIndex(subreddit);
+
                     urls.forEach((url) => {
-                        // Check if the currently iterated subreddit has an index set
-                        if (this.getSubredditPostIndex(subreddit) !== undefined) {
-                            console.log(url)
-                            // Check if the current URL exists in the array
-                            // Update the index
-                            // Get each image and download it
-                            //return this.downloadImage(entry.url, this.downloadDirectory + entry.url.split('/')[entry.url.split('/').length - 1]);
+                        // Get the currently iterated subreddit's index of urls
+                        if (subredditPostIndex.lastPolledPosts.includes(url)) {
+                            // URL is NOT new
+                            return;
                         } else {
-                            // Create the index and save it
+                            // Update the array for the current subreddit with the current URL
+                            subredditPostIndex.lastPolledPosts.push(url);
+
+                            console.log(`Downloading image: ${url}`);
+                            // Get the image and download it
+                            // Split the URL by its forward slash (to get a valid filename)
+                            let splitURLName = url.split('/');
+                            return this.downloadImage(url, this.downloadDirectory + splitURLName[splitURLName.length - 1]);
                         }
                     });
+                    this.updateSubredditPostIndex(subreddit, subredditPostIndex.lastPolledPosts);
                 })
         });
+        // Return the chain of promises
         return promiseChain;
     }
 
     // This works on all images/binary files (I hope)
+    /** Download a binary file from a URL and save it to a given path
+     * @param {*} uri 
+     * @param {*} filename
+     * @returns
+     * @memberof ReditFetchClient
+     */
     downloadImage(uri, filename) {
         return new Promise((resolve, reject) => {
             // Really not sure what this is ued for but I think it's requesting things in a very special way
             request.head(uri, function (err, res, body) {
                 if (res.body) {
+                    // TODO: Update this message
                     return reject('Response had a body (Not a raw image), use downloadGyfcatVideo() or PH to parse for images');
                 }
 
@@ -108,7 +125,7 @@ export default class ReditFetchClient {
         });
     }
 
-    addRegisteredSubreddit(newSubredditName) {
+    private addRegisteredSubreddit(newSubredditName) {
         // Sanity check
         let matchedRegisteredSubreddit = this.configJSON.registeredSubreddits.find((entry) => {
             return entry.name === newSubredditName;
@@ -124,7 +141,7 @@ export default class ReditFetchClient {
         fs.writeFileSync(this.configFileDirectory, JSON.stringify(this.configJSON, null, 2));
     }
 
-    updateSubredditPostIndex(subredditName: string, newPostIndex: string[]) {
+    private updateSubredditPostIndex(subredditName: string, newPostIndex: string[]) {
         // Find the given array of posts in the config JSON
         let matchedRegisteredSubreddit = this.configJSON.registeredSubreddits.find((entry) => {
             return entry.name === subredditName;
@@ -165,4 +182,5 @@ export default class ReditFetchClient {
 
         return urls;
     }
+
 }
