@@ -29,7 +29,6 @@ let rfc = new ReditFetchClient(wrapper, './test/', parsedConfigOptions, '../conf
 rfc.getNewRedditURLs();
 
 
-
 // Helper functions go here
 
 /** Read the config file for the script/project

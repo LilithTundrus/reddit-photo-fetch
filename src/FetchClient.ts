@@ -59,6 +59,8 @@ export default class ReditFetchClient {
         this.configJSON.subreddits.forEach((subreddit) => {
             promiseChain = promiseChain
                 .then(() => {
+                    // TODO: Add a fave threshold
+                    // TODO: Make sure the array doesn't become bloated
                     // Get an array of URLs from each post
                     return this.parseUrlsFromPosts(subreddit);
                 })
