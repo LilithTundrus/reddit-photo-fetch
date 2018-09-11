@@ -61,6 +61,7 @@ export default class ReditFetchClient {
                 .then(() => {
                     // TODO: Add a fave threshold
                     // TODO: Make sure the array doesn't become bloated
+                    // TODO: Make sure the file also doesn't exist just yet
                     // Get an array of URLs from each post
                     return this.parseUrlsFromPosts(subreddit);
                 })
@@ -160,11 +161,16 @@ export default class ReditFetchClient {
     private parseUrlsFromPosts(subreddit) {
         // Get the subreddit's FIRST 50 of newest content
         let getNewOptions: any;
-        getNewOptions = { limit: 25 };
+        getNewOptions = { limit: 50 };
 
         let urls = this.wrapper.getSubreddit(subreddit).getNew(getNewOptions).map((entry) => {
             // TODO: Support more formats!!
             // First, make sure the URL is a supported image format
+
+            if (entry.upvote_ratio < this.configJSON.redditUpvoteThreshold) {
+                console.log('Skipped item, not enought upvotes')
+                return;
+            }
             if (entry.url.includes('.jpg') || entry.url.includes('.png')) {
                 return entry.url;
             } else {
