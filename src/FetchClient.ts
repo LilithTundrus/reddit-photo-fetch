@@ -59,8 +59,7 @@ export default class ReditFetchClient {
         this.configJSON.subreddits.forEach((subreddit) => {
             promiseChain = promiseChain
                 .then(() => {
-                    // TODO: Add a fave threshold
-                    // TODO: Make sure the array doesn't become bloated
+                    // TODO: Make sure the array doesn't become bloated (more than 50)
                     // TODO: Make sure the file also doesn't exist just yet
                     // Get an array of URLs from each post
                     return this.parseUrlsFromPosts(subreddit);
@@ -69,9 +68,11 @@ export default class ReditFetchClient {
                     let subredditPostIndex = this.getSubredditPostIndex(subreddit);
 
                     urls.forEach((url) => {
+                        // TODO: If the URL is an imgur URL or a gyfcatURL, call the custom function
+
                         // Get the currently iterated subreddit's index of urls
                         if (subredditPostIndex.lastPolledPosts.includes(url)) {
-                            // URL is NOT new
+                            // URL is not new, skip
                             return;
                         } else {
                             // Update the array for the current subreddit with the current URL
@@ -91,7 +92,7 @@ export default class ReditFetchClient {
         return promiseChain;
     }
 
-    // This works on all images/binary files (I hope)
+    // This works on all images/binary files (Probably)
     /** Download a binary file from a URL and save it to a given path
      * @param {*} uri 
      * @param {*} filename
@@ -168,7 +169,7 @@ export default class ReditFetchClient {
             // First, make sure the URL is a supported image format
 
             if (entry.upvote_ratio < this.configJSON.redditUpvoteThreshold) {
-                console.log('Skipped item, not enought upvotes')
+                console.log('Skipped item, not enought upvotes');
                 return;
             }
             if (entry.url.includes('.jpg') || entry.url.includes('.png')) {
