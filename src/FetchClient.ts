@@ -92,6 +92,10 @@ export default class ReditFetchClient {
         return promiseChain;
     }
 
+    getSubbredditImages(subreddit, subFolder: string, limit: number) {
+        // For using later to generate a 'backlog' of images
+    }
+
     // This works on all images/binary files (Probably)
     /** Download a binary file from a URL and save it to a given path
      * @param {*} uri 
@@ -165,17 +169,17 @@ export default class ReditFetchClient {
         getNewOptions = { limit: 50 };
 
         let urls = this.wrapper.getSubreddit(subreddit).getNew(getNewOptions).map((entry) => {
-            // TODO: Support more formats!!
-            // First, make sure the URL is a supported image format
 
+            // First, make sure the image has at least a few upvotes (configurable)
             if (entry.upvote_ratio < this.configJSON.redditUpvoteThreshold) {
                 console.log('Skipped item, not enought upvotes');
                 return;
             }
-            if (entry.url.includes('.jpg') || entry.url.includes('.png')) {
+            // Second, make sure the URL is a supported image format
+            if (entry.url.includes('.jpg') || entry.url.includes('.png') || entry.url.includes('.jpeg') || entry.url.includes('.gif')) {
                 return entry.url;
             } else {
-                // Debugging
+                // This is where each site is handled individually
                 console.log('Invalid image link: ' + entry.url);
             }
         });
@@ -190,6 +194,18 @@ export default class ReditFetchClient {
         });
 
         return urls;
+    }
+
+    parseImgurImageFromLink(originalURL: string) {
+        request.get(originalURL, (err, res, body: string) => {
+            let lines = body.split('\n');
+            // console.log(lines)
+            let imgLines = lines.filter((line) => {
+                return line.includes('<link rel="image_src"')
+            })
+            console.log(imgLines)
+            fs.writeFileSync('test.txt', body)
+        })
     }
 
 }
