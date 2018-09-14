@@ -7,6 +7,8 @@ import * as fs from 'fs';
 import * as snoowrap from 'snoowrap';
 // Used for GET tasks for the fetchClient
 import * as request from 'request-promise';
+// For traversing html documents to grab image links from (Basically jquery for Node.js)
+import * as cheerio from 'cheerio';
 
 // Import any needed intefaces
 import { fetchConfig } from './interfaces';
@@ -62,7 +64,6 @@ export default class ReditFetchClient {
             promiseChain = promiseChain
                 .then(() => {
                     // TODO: Make sure the array doesn't become bloated (more than 50)
-                    // TODO: Make sure the file also doesn't exist just yet
                     // Get an array of URLs from each post
                     return this.parseUrlsFromPosts(subreddit);
                 })
@@ -206,24 +207,19 @@ export default class ReditFetchClient {
     }
 
     // TODO: this needs to actually parse an entire album!!
-    // parseImgurImageFromLink(originalURL: string) {
-    //     return request.get(originalURL, (err, res, body: string) => {
-    //         let lines = body.split('\n');
-    //         let imgLines = lines.filter((line) => {
-    //             return line.includes('<link rel="image_src"');
-    //         });
+    parseImgurImageFromLink(originalURL: string) {
+        return request.get(originalURL, {
+            headers: {
+                "user-agent": "Google Chrome 69"
+            }
+        }, (err, res, body: string) => {
+            // Make sure nothing went wrong with the request
+            if (err) throw new Error(err);
 
-    //         // This is some janky parsing code, something like cheerio should probably be used here
-    //         let parsedLinks = imgLines.map((entry) => {
-    //             // Get the index of the start of the URL and add 6 characters for the number of characters being checed for
-    //             let urlNoPretextIndex = entry.indexOf('href="') + 6;
-    //             // Get the index of the end of the href quotation
-    //             let urlNoPostTextIndex = entry.lastIndexOf('"');
+            let $ = cheerio.load(body);
 
-    //             return entry.substring(urlNoPretextIndex, urlNoPostTextIndex);
-    //         });
-    //         return parsedLinks[0];
-    //     });
-    // }
+            fs.writeFileSync('test.html', body)
+        });
+    }
 
 }

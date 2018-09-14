@@ -51,8 +51,7 @@ function readConfigFile(): string {
  * @param {string} fileString
  * @returns {object}
  */
-// TODO: add typings for thiss
-function parseCondigJSONFromString(fileString: string): any {
+function parseCondigJSONFromString(fileString: string): fetchConfig {
     // Try to parse the contents
     try {
         return JSON.parse(fileString);
