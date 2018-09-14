@@ -204,6 +204,17 @@ export default class ReditFetchClient {
                 return line.includes('<link rel="image_src"')
             })
             console.log(imgLines)
+
+            // This is some janky parsing code, something like cheerio should probably be used here
+            let parsedLinks = imgLines.map((entry) => {
+                // Get the index of the start of the URL and add 6 characters for the number of characters being checed for
+                let urlNoPretextIndex = entry.indexOf('href="') + 6;
+                // Get the index of the end of the href quotation
+                let urlNoPostTextIndex = entry.lastIndexOf('"');
+
+                console.log(entry.substring(urlNoPretextIndex, urlNoPostTextIndex));
+            })
+
             fs.writeFileSync('test.txt', body)
         })
     }
