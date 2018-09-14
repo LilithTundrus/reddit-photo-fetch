@@ -7,9 +7,12 @@ import ReditFetchClient from './FetchClient';
 // Dirty import of the Reddit API wrapper because its typings aren't correct
 const snoowrap = require('snoowrap');
 
+// Import any needed intefaces
+import { fetchConfig } from './interfaces';
+
 // Options for the reddit client, contains the API plus subreddit config options
 let configOptions = readConfigFile();
-const parsedConfigOptions = parseCondigJSONFromString(configOptions);
+const parsedConfigOptions: fetchConfig = parseCondigJSONFromString(configOptions);
 
 // This handles a lot of stuff for us (like token refreshing)
 let wrapper = new snoowrap({
@@ -24,12 +27,9 @@ let wrapper = new snoowrap({
 });
 
 // TODO: Have the download dir be either configurable or a CLI argument
-let rfc = new ReditFetchClient(wrapper, './test/', parsedConfigOptions, '../config.json');
+let rfc = new ReditFetchClient(wrapper, './staging/', parsedConfigOptions, '../config.json');
 
 rfc.getNewRedditURLs();
-
-// rfc.parseImgurImageFromLink('https://imgur.com/gallery/UP9xEfG') 
-
 
 // Helper functions go here
 

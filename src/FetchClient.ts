@@ -3,11 +3,13 @@
 
 // Node/NPM requires and imports
 import * as fs from 'fs';
-
 // Used to get the typings for snoowrapperInstance
 import * as snoowrap from 'snoowrap';
 // Used for GET tasks for the fetchClient
 import * as request from 'request-promise';
+
+// Import any needed intefaces
+import { fetchConfig } from './interfaces';
 
 request.defaults({ encoding: null });
 
@@ -17,7 +19,7 @@ export default class ReditFetchClient {
     private wrapper: snoowrap;
     private downloadDirectory: string;
     // TODO: Add typings to this
-    private configJSON: any;
+    private configJSON: fetchConfig;
     private configFileDirectory: string;
 
     constructor(snooWrapperInstance, downloadDirectory, configJSON, configFileDirectory) {
