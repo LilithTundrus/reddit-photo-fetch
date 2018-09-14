@@ -180,6 +180,13 @@ export default class ReditFetchClient {
                 return entry.url;
             } else {
                 // This is where each site is handled individually
+
+                // If an Imgur link
+                // if (entry.url.includes('imgur')) {
+                //     let parsedUrl = this.parseImgurImageFromLink(entry.url);
+                //     return parsedUrl;
+                // }
+
                 console.log('Invalid image link: ' + entry.url);
             }
         });
@@ -196,27 +203,25 @@ export default class ReditFetchClient {
         return urls;
     }
 
-    parseImgurImageFromLink(originalURL: string) {
-        request.get(originalURL, (err, res, body: string) => {
-            let lines = body.split('\n');
-            // console.log(lines)
-            let imgLines = lines.filter((line) => {
-                return line.includes('<link rel="image_src"')
-            })
-            console.log(imgLines)
+    // TODO: this needs to actually parse an entire album!!
+    // parseImgurImageFromLink(originalURL: string) {
+    //     return request.get(originalURL, (err, res, body: string) => {
+    //         let lines = body.split('\n');
+    //         let imgLines = lines.filter((line) => {
+    //             return line.includes('<link rel="image_src"');
+    //         });
 
-            // This is some janky parsing code, something like cheerio should probably be used here
-            let parsedLinks = imgLines.map((entry) => {
-                // Get the index of the start of the URL and add 6 characters for the number of characters being checed for
-                let urlNoPretextIndex = entry.indexOf('href="') + 6;
-                // Get the index of the end of the href quotation
-                let urlNoPostTextIndex = entry.lastIndexOf('"');
+    //         // This is some janky parsing code, something like cheerio should probably be used here
+    //         let parsedLinks = imgLines.map((entry) => {
+    //             // Get the index of the start of the URL and add 6 characters for the number of characters being checed for
+    //             let urlNoPretextIndex = entry.indexOf('href="') + 6;
+    //             // Get the index of the end of the href quotation
+    //             let urlNoPostTextIndex = entry.lastIndexOf('"');
 
-                console.log(entry.substring(urlNoPretextIndex, urlNoPostTextIndex));
-            })
-
-            fs.writeFileSync('test.txt', body)
-        })
-    }
+    //             return entry.substring(urlNoPretextIndex, urlNoPostTextIndex);
+    //         });
+    //         return parsedLinks[0];
+    //     });
+    // }
 
 }
