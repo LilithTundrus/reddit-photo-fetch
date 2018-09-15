@@ -1,5 +1,7 @@
 export interface fetchConfig {
-    redditBaseURL: string,
+    imgurClientID: string,
+    imgureSecret: string,
+    imgurBaseURL: string,
     redditClientID: string,
     redditRedirectURL: string,
     redditSecret: string
