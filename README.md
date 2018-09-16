@@ -3,7 +3,7 @@
 For now, if you want any info on the project's progression, see the [Design Doc](./design-doc.md)
 
 
-__NOTE:__ Optionally, you can supply an imgur API client/secret in the config file for getting non-direct imgure links (not linking directly to the imagfe) as this can happen often when images are linked on Reddit
+__NOTE:__ Optionally, you can supply an imgur API client/secret in the config file for getting non-direct imgur links (not linking directly to the images) as this can happen often when images are linked on Reddit
 
 ## Getting Started with Reddit's API + HTTPS + Oauth2
 
