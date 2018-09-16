@@ -12,7 +12,6 @@ import * as cheerio from 'cheerio';
 // Imgur API interactions wrapper
 import ImgurWrapper from './imgurWrapper';
 
-
 // Import any needed intefaces
 import { fetchConfig } from './interfaces';
 
@@ -20,12 +19,15 @@ import { fetchConfig } from './interfaces';
 request.defaults({ encoding: null });
 
 export default class ReditFetchClient {
-    // Base URL for fetching reddit data
+    // Wrapper fetching reddit data
     private wrapper: snoowrap;
+    // Directory to download images/videos to
     private downloadDirectory: string;
-    // TODO: Add typings to this
+    // JSON config file needed for some secrets and private settings (typed)
     private configJSON: fetchConfig;
+    // Directory of the config file (Since it needs to be written to)
     private configFileDirectory: string;
+    // Wrapper for any imgur images that are not direct links
     private imgurWrapper: ImgurWrapper;
 
     constructor(snooWrapperInstance, downloadDirectory, configJSON, configFileDirectory) {
@@ -76,9 +78,6 @@ export default class ReditFetchClient {
                         return urls;
                     })
                 })
-                // .then((urls) => {
-                //     console.log('test', urls)
-                // })
                 .then((urls: any) => {
                     let subredditPostIndex = this.getSubredditPostIndex(subreddit);
 
@@ -137,9 +136,6 @@ export default class ReditFetchClient {
     downloadGyfcatVideo() {
         // Parse a gyfcat for the mp4 URL to download
     }
-
-    // This class will also help with doing stuff like checking if a post/image is
-    // new to the script/etc.
 
     getSubredditPostIndex(subredditName: string) {
         // Check if a postIndex from the config file for a subreddit already exists
