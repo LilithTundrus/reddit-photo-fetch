@@ -29,11 +29,11 @@ let wrapper = new snoowrap({
 // TODO: Have the download dir be either configurable or a CLI argument
 let rfc = new ReditFetchClient(wrapper, './staging/', parsedConfigOptions, '../config.json');
 
-// rfc.getNewRedditURLs();
+rfc.getNewRedditURLs();
 
-rfc.parseImgurImageFromLink('https://imgur.com/hUbRymb').then((link) => {
-    console.log(link)
-})
+// rfc.parseImgurImageFromLink('https://imgur.com/hUbRymb').then((link) => {
+//     console.log(link)
+// })
 
 // Helper functions go here
 

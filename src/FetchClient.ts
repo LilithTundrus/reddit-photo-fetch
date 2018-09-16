@@ -6,7 +6,7 @@ import * as fs from 'fs';
 // Used to get the typings for snoowrapperInstance
 import * as snoowrap from 'snoowrap';
 // Used for GET tasks for the fetchClient
-import * as request from 'request';
+import * as request from 'request-promise';
 // For traversing html documents to grab image links from (Basically jquery for Node.js)
 import * as cheerio from 'cheerio';
 // Imgur API interactions wrapper
@@ -72,31 +72,33 @@ export default class ReditFetchClient {
                 .then(() => {
                     // TODO: Make sure the array doesn't become bloated (more than 50)
                     // Get an array of URLs from each post
-                    return this.parseUrlsFromPosts(subreddit);
+                    return this.parseUrlsFromPosts(subreddit).then((urls) => {
+                        console.log(urls)
+                    })
                 })
-                .then((urls) => {
-                    let subredditPostIndex = this.getSubredditPostIndex(subreddit);
+                // .then((urls) => {
+                //     let subredditPostIndex = this.getSubredditPostIndex(subreddit);
 
-                    urls.forEach((url) => {
-                        // TODO: If the URL is an imgur URL or a gyfcatURL, call the custom function
+                //     urls.forEach((url) => {
+                //         // TODO: If the URL is an imgur URL or a gyfcatURL, call the custom function
 
-                        // Get the currently iterated subreddit's index of urls
-                        if (subredditPostIndex.lastPolledPosts.includes(url)) {
-                            // URL is not new, skip
-                            return;
-                        } else {
-                            // Update the array for the current subreddit with the current URL
-                            subredditPostIndex.lastPolledPosts.push(url);
+                //         // Get the currently iterated subreddit's index of urls
+                //         if (subredditPostIndex.lastPolledPosts.includes(url)) {
+                //             // URL is not new, skip
+                //             return;
+                //         } else {
+                //             // Update the array for the current subreddit with the current URL
+                //             subredditPostIndex.lastPolledPosts.push(url);
 
-                            console.log(`Downloading image: ${url}`);
-                            // Get the image and download it
-                            // Split the URL by its forward slash (to get a valid filename)
-                            let splitURLName = url.split('/');
-                            return this.downloadImage(url, this.downloadDirectory + splitURLName[splitURLName.length - 1]);
-                        }
-                    });
-                    this.updateSubredditPostIndex(subreddit, subredditPostIndex.lastPolledPosts);
-                })
+                //             console.log(`Downloading image: ${url}`);
+                //             // Get the image and download it
+                //             // Split the URL by its forward slash (to get a valid filename)
+                //             let splitURLName = url.split('/');
+                //             return this.downloadImage(url, this.downloadDirectory + splitURLName[splitURLName.length - 1]);
+                //         }
+                //     });
+                //     this.updateSubredditPostIndex(subreddit, subredditPostIndex.lastPolledPosts);
+                // })
         });
         // Return the chain of promises
         return promiseChain;
@@ -173,12 +175,12 @@ export default class ReditFetchClient {
         fs.writeFileSync(this.configFileDirectory, JSON.stringify(this.configJSON, null, 2));
     }
 
-    private parseUrlsFromPosts(subreddit) {
+    private async parseUrlsFromPosts(subreddit) {
         // Get the subreddit's FIRST 50 of newest content
         let getNewOptions: any;
         getNewOptions = { limit: 50 };
 
-        let urls = this.wrapper.getSubreddit(subreddit).getNew(getNewOptions).map((entry) => {
+        let urls = this.wrapper.getSubreddit(subreddit).getNew(getNewOptions).map(async (entry) => {
 
             // First, make sure the image has at least a few upvotes (configurable)
             if (entry.upvote_ratio < this.configJSON.redditUpvoteThreshold) {
@@ -192,10 +194,12 @@ export default class ReditFetchClient {
                 // This is where each site is handled individually
 
                 // If an Imgur link
-                // if (entry.url.includes('imgur')) {
-                //     let parsedUrl = this.parseImgurImageFromLink(entry.url);
-                //     return parsedUrl;
-                // }
+                if (entry.url.includes('imgur')) {
+                    let parsedUrl = await this.parseImgurImageFromLink(entry.url).then((url) => {
+                        return url;
+                    })
+                    return parsedUrl
+                }
 
                 console.log('Invalid image link: ' + entry.url);
             }
@@ -224,7 +228,7 @@ export default class ReditFetchClient {
                 throw new Error(e);
             }
 
-            return responseData.link;
+            return responseData.data.link;
         })
     }
 

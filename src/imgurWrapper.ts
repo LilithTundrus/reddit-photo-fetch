@@ -4,7 +4,7 @@
 // Node/NPM requires and imports
 import * as fs from 'fs';
 // Used for GET tasks for the fetchClient
-import * as request from 'request-promise';
+import * as request from 'request';
 
 export default class ImgurWrapper {
     private baseImgurURL: string;
@@ -27,9 +27,9 @@ export default class ImgurWrapper {
                 }
             }, (err, res, body: string) => {
                 // Make sure nothing went wrong with the request
-                if (err) return reject(err);
+                if (err)  reject(err);
 
-                return resolve(body);
+                 resolve(body);
             });
         });
     }
