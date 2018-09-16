@@ -1,8 +1,6 @@
 // Using ES5 strict mode
 'use strict';
 
-// Node/NPM requires and imports
-import * as fs from 'fs';
 // Used for GET tasks for the fetchClient
 import * as request from 'request';
 
