@@ -3,6 +3,8 @@
 For now, if you want any info on the project's progression, see the [Design Doc](./design-doc.md)
 
 
+__NOTE:__ Optionally, you can supply an imgur API client/secret in the config file for getting non-direct imgure links (not linking directly to the imagfe) as this can happen often when images are linked on Reddit
+
 ## Getting Started with Reddit's API + HTTPS + Oauth2
 
 The main stumbling block with Reddit's API is that is requires oauth, which isn't simple to understand or to set up if you're relatively new. Hopefully this guide at least points you the right way to get you started!
