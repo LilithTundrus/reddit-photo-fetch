@@ -6,16 +6,17 @@ import * as fs from 'fs';
 // Used to get the typings for snoowrapperInstance
 import * as snoowrap from 'snoowrap';
 // Used for GET tasks for the fetchClient
-import * as request from 'request-promise';
+import * as request from 'request';
 // For traversing html documents to grab image links from (Basically jquery for Node.js)
 import * as cheerio from 'cheerio';
 // Imgur API interactions wrapper
-import { test } from './imgurWrapper';
+import ImgurWrapper from './imgurWrapper';
 
 
 // Import any needed intefaces
 import { fetchConfig } from './interfaces';
 
+// Ensures request does not use a default encoding for GET operations 
 request.defaults({ encoding: null });
 
 export default class ReditFetchClient {
@@ -25,6 +26,7 @@ export default class ReditFetchClient {
     // TODO: Add typings to this
     private configJSON: fetchConfig;
     private configFileDirectory: string;
+    private imgurWrapper: ImgurWrapper;
 
     constructor(snooWrapperInstance, downloadDirectory, configJSON, configFileDirectory) {
         this.wrapper = snooWrapperInstance;
@@ -41,6 +43,9 @@ export default class ReditFetchClient {
         if (!fs.existsSync(this.configFileDirectory)) {
             throw new Error(`${configFileDirectory} is not a valid config file to write to.`);
         }
+
+        // Create an instance of the imgurWrapper
+        this.imgurWrapper = new ImgurWrapper(this.configJSON.imgurBaseURL, this.configJSON.imgurClientID);
     }
 
     /** Get the class's instance of Snoowrap
@@ -210,15 +215,7 @@ export default class ReditFetchClient {
 
     // TODO: this needs to actually parse an entire album!!
     parseImgurImageFromLink(originalURL: string) {
-        // return request.get(originalURL, (err, res, body: string) => {
-        //     // Make sure nothing went wrong with the request
-        //     if (err) throw new Error(err);
-
-        //     let $ = cheerio.load(body);
-
-        //     fs.writeFileSync('test.html', body)
-        // });
-        test(originalURL, this.configJSON.imgurBaseURL, this.configJSON.imgurClientID).then((data) => {
+        return this.imgurWrapper.getImgurPostInfo(originalURL).then((data: any) => {
             let responseData;
 
             try {
@@ -227,7 +224,7 @@ export default class ReditFetchClient {
                 throw new Error(e);
             }
 
-            console.log(responseData)
+            return responseData.link;
         })
     }
 

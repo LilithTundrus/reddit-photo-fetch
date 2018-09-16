@@ -31,7 +31,9 @@ let rfc = new ReditFetchClient(wrapper, './staging/', parsedConfigOptions, '../c
 
 // rfc.getNewRedditURLs();
 
-rfc.parseImgurImageFromLink('https://imgur.com/hUbRymb')
+rfc.parseImgurImageFromLink('https://imgur.com/hUbRymb').then((link) => {
+    console.log(link)
+})
 
 // Helper functions go here
 
