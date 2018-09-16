@@ -9,6 +9,9 @@ import * as snoowrap from 'snoowrap';
 import * as request from 'request-promise';
 // For traversing html documents to grab image links from (Basically jquery for Node.js)
 import * as cheerio from 'cheerio';
+// Imgur API interactions wrapper
+import { test } from './imgurWrapper';
+
 
 // Import any needed intefaces
 import { fetchConfig } from './interfaces';
@@ -16,7 +19,6 @@ import { fetchConfig } from './interfaces';
 request.defaults({ encoding: null });
 
 export default class ReditFetchClient {
-
     // Base URL for fetching reddit data
     private wrapper: snoowrap;
     private downloadDirectory: string;
@@ -208,18 +210,25 @@ export default class ReditFetchClient {
 
     // TODO: this needs to actually parse an entire album!!
     parseImgurImageFromLink(originalURL: string) {
-        return request.get(originalURL, {
-            headers: {
-                "user-agent": "Google Chrome 69"
+        // return request.get(originalURL, (err, res, body: string) => {
+        //     // Make sure nothing went wrong with the request
+        //     if (err) throw new Error(err);
+
+        //     let $ = cheerio.load(body);
+
+        //     fs.writeFileSync('test.html', body)
+        // });
+        test(originalURL, this.configJSON.imgurBaseURL, this.configJSON.imgurClientID).then((data) => {
+            let responseData;
+
+            try {
+                responseData = JSON.parse(data);
+            } catch (e) {
+                throw new Error(e);
             }
-        }, (err, res, body: string) => {
-            // Make sure nothing went wrong with the request
-            if (err) throw new Error(err);
 
-            let $ = cheerio.load(body);
-
-            fs.writeFileSync('test.html', body)
-        });
+            console.log(responseData)
+        })
     }
 
 }
