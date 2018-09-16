@@ -58,6 +58,10 @@ export default class ReditFetchClient {
         return this.wrapper;
     }
 
+    /** Get the new Reddit URLs from the class's config file instance and download them
+     * @returns void
+     * @memberof ReditFetchClient
+     */
     getNewRedditURLs() {
         /* 
         Take the array, match each subreddit URL to the currently indexed subreddits
@@ -66,18 +70,22 @@ export default class ReditFetchClient {
         for each new link, download the image/file
         */
 
-        // Promise chain to attach each subreddit check to
+        // Promise chain to attach each subreddit check to ( needed since each check is async)
         let promiseChain = Promise.resolve();
 
+        // Iterate through each subreddit in the config file
         this.configJSON.subreddits.forEach((subreddit) => {
             promiseChain = promiseChain
                 .then(() => {
                     // TODO: Make sure the array doesn't become bloated (more than 50)
+
                     // Get an array of URLs from each post
                     return this.parseUrlsFromPosts(subreddit).then((urls) => {
                         return urls;
                     })
                 })
+                // The argument `urls` is an any due to a weird promise chaining issues
+                // TODO: resolve this!
                 .then((urls: any) => {
                     let subredditPostIndex = this.getSubredditPostIndex(subreddit);
 
@@ -93,8 +101,7 @@ export default class ReditFetchClient {
                             subredditPostIndex.lastPolledPosts.push(url);
 
                             console.log(`Downloading image: ${url}`);
-                            // Get the image and download it
-                            // Split the URL by its forward slash (to get a valid filename)
+                            // Get the image and download it, spliting the URL by its forward slash to get a valid filename
                             let splitURLName = url.split('/');
                             return this.downloadImage(url, this.downloadDirectory + splitURLName[splitURLName.length - 1]);
                         }
@@ -110,11 +117,11 @@ export default class ReditFetchClient {
         // For using later to generate a 'backlog' of images
     }
 
-    // This works on all images/binary files (Probably)
+    // TODO: this should make sure that no files are being overwritten!!!
     /** Download a binary file from a URL and save it to a given path
      * @param {*} uri 
      * @param {*} filename
-     * @returns
+     * @returns `Promise<string>`
      * @memberof ReditFetchClient
      */
     downloadImage(uri, filename) {
@@ -197,10 +204,10 @@ export default class ReditFetchClient {
                     let parsedUrl = await this.parseImgurImageFromLink(entry.url).then((url) => {
                         return url;
                     })
-                    return parsedUrl
+                    return parsedUrl;
+                } else {
+                    console.log('Invalid image link: ' + entry.url);
                 }
-
-                console.log('Invalid image link: ' + entry.url);
             }
         });
 
@@ -216,11 +223,18 @@ export default class ReditFetchClient {
         return urls;
     }
 
-    // TODO: this needs to actually parse an entire album!!
+    /** Parse a direct image link from an imgur URL
+     * @param {string} originalURL
+     * @returns `Promise<string>`
+     * @memberof ReditFetchClient
+     */
     parseImgurImageFromLink(originalURL: string) {
-        return this.imgurWrapper.getImgurPostInfo(originalURL).then((data: any) => {
+        // Get a post's info, the 'data' promise resolve is `any` due to issues
+        // with the request library and typescript thinking the promises are bluebird (not native)
+        return this.imgurWrapper.getImgurPostImageLink(originalURL).then((data: any) => {
             let responseData;
 
+            // Make sure the JSON response can actually be parsed
             try {
                 responseData = JSON.parse(data);
             } catch (e) {

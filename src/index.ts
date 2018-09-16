@@ -14,7 +14,7 @@ import { fetchConfig } from './interfaces';
 let configOptions = readConfigFile();
 const parsedConfigOptions: fetchConfig = parseCondigJSONFromString(configOptions);
 
-// This handles a lot of stuff for us (like token refreshing)
+// Snoowrap reddit API wrapper handles a lot of stuff for us (like token refreshing)
 let wrapper = new snoowrap({
     // Custom required useragent string for any Reddit project
     userAgent: parsedConfigOptions.redditUserAgent,
@@ -57,6 +57,6 @@ function parseCondigJSONFromString(fileString: string): fetchConfig {
         return JSON.parse(fileString);
     } catch (e) {
         console.log('Could not parse JSON from given file string');
-        return process.exit(0);
+        return process.exit(1);
     }
 }

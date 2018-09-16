@@ -10,7 +10,7 @@ export default class ImgurWrapper {
     // ID of the imgur client
     private clientID: string;
     // Headers to be used on requests to imgur
-    private headers;
+    private headers: {};
 
     constructor(baseImgurURL: string, clientID: string) {
         this.baseImgurURL = baseImgurURL;
@@ -20,13 +20,14 @@ export default class ImgurWrapper {
         };
     }
 
+    // TODO: This should make sure the link is not an album
     /** Get an imgur image's direct URL based on its relative URL
      * @param {string} imgurURL
      * @returns `string`
      * @memberof ImgurWrapper
      */
     getImgurPostImageLink(imgurURL: string) {
-        // TODO: make sure the link is not an album
+
         // Get the last part of the URl, as that's the ID
         let parsedImageID = imgurURL.substring(imgurURL.lastIndexOf('/') + 1);
 
