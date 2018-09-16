@@ -73,32 +73,35 @@ export default class ReditFetchClient {
                     // TODO: Make sure the array doesn't become bloated (more than 50)
                     // Get an array of URLs from each post
                     return this.parseUrlsFromPosts(subreddit).then((urls) => {
-                        console.log(urls)
+                        return urls;
                     })
                 })
                 // .then((urls) => {
-                //     let subredditPostIndex = this.getSubredditPostIndex(subreddit);
-
-                //     urls.forEach((url) => {
-                //         // TODO: If the URL is an imgur URL or a gyfcatURL, call the custom function
-
-                //         // Get the currently iterated subreddit's index of urls
-                //         if (subredditPostIndex.lastPolledPosts.includes(url)) {
-                //             // URL is not new, skip
-                //             return;
-                //         } else {
-                //             // Update the array for the current subreddit with the current URL
-                //             subredditPostIndex.lastPolledPosts.push(url);
-
-                //             console.log(`Downloading image: ${url}`);
-                //             // Get the image and download it
-                //             // Split the URL by its forward slash (to get a valid filename)
-                //             let splitURLName = url.split('/');
-                //             return this.downloadImage(url, this.downloadDirectory + splitURLName[splitURLName.length - 1]);
-                //         }
-                //     });
-                //     this.updateSubredditPostIndex(subreddit, subredditPostIndex.lastPolledPosts);
+                //     console.log('test', urls)
                 // })
+                .then((urls: any) => {
+                    let subredditPostIndex = this.getSubredditPostIndex(subreddit);
+
+                    urls.forEach((url) => {
+                        // TODO: If the URL is a gyfcat URL, call the custom function
+
+                        // Get the currently iterated subreddit's index of urls
+                        if (subredditPostIndex.lastPolledPosts.includes(url)) {
+                            // URL is not new, skip
+                            return;
+                        } else {
+                            // Update the array for the current subreddit with the current URL
+                            subredditPostIndex.lastPolledPosts.push(url);
+
+                            console.log(`Downloading image: ${url}`);
+                            // Get the image and download it
+                            // Split the URL by its forward slash (to get a valid filename)
+                            let splitURLName = url.split('/');
+                            return this.downloadImage(url, this.downloadDirectory + splitURLName[splitURLName.length - 1]);
+                        }
+                    });
+                    this.updateSubredditPostIndex(subreddit, subredditPostIndex.lastPolledPosts);
+                })
         });
         // Return the chain of promises
         return promiseChain;
