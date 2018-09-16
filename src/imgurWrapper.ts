@@ -27,9 +27,9 @@ export default class ImgurWrapper {
                 }
             }, (err, res, body: string) => {
                 // Make sure nothing went wrong with the request
-                if (err)  reject(err);
+                if (err) reject(err);
 
-                 resolve(body);
+                resolve(body);
             });
         });
     }
