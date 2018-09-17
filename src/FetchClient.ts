@@ -183,6 +183,8 @@ export default class ReditFetchClient {
 
     private async parseUrlsFromPosts(subreddit) {
         // Get the subreddit's FIRST 50 of newest content
+
+        // Declared as an any due to snoowrap having improper typings
         let getNewOptions: any;
         getNewOptions = { limit: 50 };
 
@@ -244,5 +246,4 @@ export default class ReditFetchClient {
             return responseData.data.link;
         })
     }
-
 }

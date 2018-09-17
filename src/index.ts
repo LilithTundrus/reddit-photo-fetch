@@ -10,6 +10,8 @@ const snoowrap = require('snoowrap');
 // Import any needed intefaces
 import { fetchConfig } from './interfaces';
 
+// TODO: Improve and document this!
+
 // Options for the reddit client, contains the API plus subreddit config options
 let configOptions = readConfigFile();
 const parsedConfigOptions: fetchConfig = parseCondigJSONFromString(configOptions);
