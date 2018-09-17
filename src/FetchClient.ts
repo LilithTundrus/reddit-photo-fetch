@@ -3,22 +3,32 @@
 
 // Node/NPM requires and imports
 import * as fs from 'fs';
-
 // Used to get the typings for snoowrapperInstance
 import * as snoowrap from 'snoowrap';
 // Used for GET tasks for the fetchClient
 import * as request from 'request-promise';
+// For traversing html documents to grab image links from (Basically jquery for Node.js)
+import * as cheerio from 'cheerio';
+// Imgur API interactions wrapper
+import ImgurWrapper from './imgurWrapper';
 
+// Import any needed intefaces
+import { fetchConfig } from './interfaces';
+
+// Ensures request does not use a default encoding for GET operations 
 request.defaults({ encoding: null });
 
 export default class ReditFetchClient {
-
-    // Base URL for fetching reddit data
+    // Wrapper fetching reddit data
     private wrapper: snoowrap;
+    // Directory to download images/videos to
     private downloadDirectory: string;
-    // TODO: Add typings to this
-    private configJSON: any;
+    // JSON config file needed for some secrets and private settings (typed)
+    private configJSON: fetchConfig;
+    // Directory of the config file (Since it needs to be written to)
     private configFileDirectory: string;
+    // Wrapper for any imgur images that are not direct links
+    private imgurWrapper: ImgurWrapper;
 
     constructor(snooWrapperInstance, downloadDirectory, configJSON, configFileDirectory) {
         this.wrapper = snooWrapperInstance;
@@ -35,6 +45,9 @@ export default class ReditFetchClient {
         if (!fs.existsSync(this.configFileDirectory)) {
             throw new Error(`${configFileDirectory} is not a valid config file to write to.`);
         }
+
+        // Create an instance of the imgurWrapper
+        this.imgurWrapper = new ImgurWrapper(this.configJSON.imgurBaseURL, this.configJSON.imgurClientID);
     }
 
     /** Get the class's instance of Snoowrap
@@ -45,6 +58,10 @@ export default class ReditFetchClient {
         return this.wrapper;
     }
 
+    /** Get the new Reddit URLs from the class's config file instance and download them
+     * @returns void
+     * @memberof ReditFetchClient
+     */
     getNewRedditURLs() {
         /* 
         Take the array, match each subreddit URL to the currently indexed subreddits
@@ -53,33 +70,38 @@ export default class ReditFetchClient {
         for each new link, download the image/file
         */
 
-        // Promise chain to attach each subreddit check to
+        // Promise chain to attach each subreddit check to ( needed since each check is async)
         let promiseChain = Promise.resolve();
 
+        // Iterate through each subreddit in the config file
         this.configJSON.subreddits.forEach((subreddit) => {
             promiseChain = promiseChain
                 .then(() => {
-                    // TODO: Add a fave threshold
-                    // TODO: Make sure the array doesn't become bloated
-                    // TODO: Make sure the file also doesn't exist just yet
+                    // TODO: Make sure the array doesn't become bloated (more than 50)
+
                     // Get an array of URLs from each post
-                    return this.parseUrlsFromPosts(subreddit);
+                    return this.parseUrlsFromPosts(subreddit).then((urls) => {
+                        return urls;
+                    })
                 })
-                .then((urls) => {
+                // The argument `urls` is an any due to a weird promise chaining issues
+                // TODO: resolve this!
+                .then((urls: any) => {
                     let subredditPostIndex = this.getSubredditPostIndex(subreddit);
 
                     urls.forEach((url) => {
+                        // TODO: If the URL is a gyfcat URL, call the custom function
+
                         // Get the currently iterated subreddit's index of urls
                         if (subredditPostIndex.lastPolledPosts.includes(url)) {
-                            // URL is NOT new
+                            // URL is not new, skip
                             return;
                         } else {
                             // Update the array for the current subreddit with the current URL
                             subredditPostIndex.lastPolledPosts.push(url);
 
                             console.log(`Downloading image: ${url}`);
-                            // Get the image and download it
-                            // Split the URL by its forward slash (to get a valid filename)
+                            // Get the image and download it, spliting the URL by its forward slash to get a valid filename
                             let splitURLName = url.split('/');
                             return this.downloadImage(url, this.downloadDirectory + splitURLName[splitURLName.length - 1]);
                         }
@@ -91,11 +113,15 @@ export default class ReditFetchClient {
         return promiseChain;
     }
 
-    // This works on all images/binary files (I hope)
+    getSubbredditImages(subreddit, subFolder: string, limit: number) {
+        // For using later to generate a 'backlog' of images
+    }
+
+    // TODO: this should make sure that no files are being overwritten!!!
     /** Download a binary file from a URL and save it to a given path
      * @param {*} uri 
      * @param {*} filename
-     * @returns
+     * @returns `Promise<string>`
      * @memberof ReditFetchClient
      */
     downloadImage(uri, filename) {
@@ -117,9 +143,6 @@ export default class ReditFetchClient {
     downloadGyfcatVideo() {
         // Parse a gyfcat for the mp4 URL to download
     }
-
-    // This class will also help with doing stuff like checking if a post/image is
-    // new to the script/etc.
 
     getSubredditPostIndex(subredditName: string) {
         // Check if a postIndex from the config file for a subreddit already exists
@@ -158,24 +181,35 @@ export default class ReditFetchClient {
         fs.writeFileSync(this.configFileDirectory, JSON.stringify(this.configJSON, null, 2));
     }
 
-    private parseUrlsFromPosts(subreddit) {
+    private async parseUrlsFromPosts(subreddit) {
         // Get the subreddit's FIRST 50 of newest content
+
+        // Declared as an any due to snoowrap having improper typings
         let getNewOptions: any;
         getNewOptions = { limit: 50 };
 
-        let urls = this.wrapper.getSubreddit(subreddit).getNew(getNewOptions).map((entry) => {
-            // TODO: Support more formats!!
-            // First, make sure the URL is a supported image format
+        let urls = this.wrapper.getSubreddit(subreddit).getNew(getNewOptions).map(async (entry) => {
 
+            // First, make sure the image has at least a few upvotes (configurable)
             if (entry.upvote_ratio < this.configJSON.redditUpvoteThreshold) {
-                console.log('Skipped item, not enought upvotes')
+                console.log('Skipped item, not enought upvotes');
                 return;
             }
-            if (entry.url.includes('.jpg') || entry.url.includes('.png')) {
+            // Second, make sure the URL is a supported image format
+            if (entry.url.includes('.jpg') || entry.url.includes('.png') || entry.url.includes('.jpeg') || entry.url.includes('.gif')) {
                 return entry.url;
             } else {
-                // Debugging
-                console.log('Invalid image link: ' + entry.url);
+                // This is where each site is handled individually
+
+                // If an Imgur link
+                if (entry.url.includes('imgur')) {
+                    let parsedUrl = await this.parseImgurImageFromLink(entry.url).then((url) => {
+                        return url;
+                    })
+                    return parsedUrl;
+                } else {
+                    console.log('Invalid image link: ' + entry.url);
+                }
             }
         });
 
@@ -191,4 +225,25 @@ export default class ReditFetchClient {
         return urls;
     }
 
+    /** Parse a direct image link from an imgur URL
+     * @param {string} originalURL
+     * @returns `Promise<string>`
+     * @memberof ReditFetchClient
+     */
+    parseImgurImageFromLink(originalURL: string) {
+        // Get a post's info, the 'data' promise resolve is `any` due to issues
+        // with the request library and typescript thinking the promises are bluebird (not native)
+        return this.imgurWrapper.getImgurPostImageLink(originalURL).then((data: any) => {
+            let responseData;
+
+            // Make sure the JSON response can actually be parsed
+            try {
+                responseData = JSON.parse(data);
+            } catch (e) {
+                throw new Error(e);
+            }
+
+            return responseData.data.link;
+        })
+    }
 }
