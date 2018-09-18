@@ -28,8 +28,22 @@ let wrapper = new snoowrap({
     refreshToken: parsedConfigOptions.redditRefreshToken
 });
 
-// TODO: Have the download dir be either configurable or a CLI argument
-let rfc = new ReditFetchClient(wrapper, './staging/', parsedConfigOptions, '../config.json');
+let rfc: ReditFetchClient;
+
+// If there's an argument present (ignoring the first 2 indeces of `node` and `index.js`)
+if (process.argv[2]) {
+    // Make sure that the directory exists
+    if (fs.existsSync(process.argv[2])) {
+        console.log(`Using ${process.argv[2]} as the directory to write new photos to.`);
+        rfc = new ReditFetchClient(wrapper, './staging/', parsedConfigOptions, '../config.json');
+    } else {
+        console.log(`Error: ${process.argv[2]} is not a valid directory`);
+        process.exit(1);
+    }
+} else {
+    rfc = new ReditFetchClient(wrapper, './staging/', parsedConfigOptions, '../config.json');
+}
+
 
 rfc.getNewRedditURLs();
 
