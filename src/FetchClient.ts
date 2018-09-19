@@ -102,12 +102,8 @@ export default class ReditFetchClient {
                             console.log(`Downloading image: ${url}`);
                             // Get the image and download it, spliting the URL by its forward slash to get a valid filename
                             let splitURLName = url.split('/');
-                            let filename = splitURLName[splitURLName.length - 1];
+                            let filename: string = splitURLName[splitURLName.length - 1];
 
-                            // If the filename is already in the directory, make sure it doesn't get overwritten
-                            if (this.checkIfFileExists(`${this.downloadDirectory}${filename}`)) {
-                                filename = filename + 'a';
-                            }
                             return this.downloadImage(url, this.downloadDirectory + filename);
                         }
                     });
