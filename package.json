@@ -9,15 +9,20 @@
     "@types/request-promise": "^4.1.42",
     "@types/snoowrap": "^1.16.0",
     "cheerio": "^1.0.0-rc.2",
+    "in": "^0.12.2",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
-    "snoowrap": "^1.15.2"
+    "snoowrap": "^1.15.2",
+    "typescript": "^3.0.3",
+    "typescript-tools": "^0.3.1"
   },
   "devDependencies": {
-    "jest": "^23.6.0"
+    "@types/jest": "^23.3.2",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.1.4"
   },
   "scripts": {
-    "test": "npm test"
+    "test": "npx jest"
   },
   "repository": {
     "type": "git",

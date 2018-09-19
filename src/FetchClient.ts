@@ -30,7 +30,7 @@ export default class ReditFetchClient {
     // Wrapper for any imgur images that are not direct links
     private imgurWrapper: ImgurWrapper;
 
-    constructor(snooWrapperInstance, downloadDirectory, configJSON, configFileDirectory) {
+    constructor(snooWrapperInstance: snoowrap, downloadDirectory: string, configJSON: fetchConfig, configFileDirectory: string) {
         this.wrapper = snooWrapperInstance;
         this.downloadDirectory = downloadDirectory;
         this.configJSON = configJSON;
@@ -75,15 +75,14 @@ export default class ReditFetchClient {
 
         // Iterate through each subreddit in the config file
         this.configJSON.subreddits.forEach((subreddit) => {
-            promiseChain = promiseChain
-                .then(() => {
-                    // TODO: Make sure the array doesn't become bloated (more than 50)
+            promiseChain = promiseChain.then(() => {
+                // TODO: Make sure the array doesn't become bloated (more than 50)
 
-                    // Get an array of URLs from each post
-                    return this.parseUrlsFromPosts(subreddit).then((urls) => {
-                        return urls;
-                    })
+                // Get an array of URLs from each post
+                return this.parseUrlsFromPosts(subreddit).then((urls) => {
+                    return urls;
                 })
+            })
                 // The argument `urls` is an any due to a weird promise chaining issues
                 // TODO: resolve this!
                 .then((urls: any) => {
@@ -103,7 +102,9 @@ export default class ReditFetchClient {
                             console.log(`Downloading image: ${url}`);
                             // Get the image and download it, spliting the URL by its forward slash to get a valid filename
                             let splitURLName = url.split('/');
-                            return this.downloadImage(url, this.downloadDirectory + splitURLName[splitURLName.length - 1]);
+                            let filename: string = splitURLName[splitURLName.length - 1];
+
+                            return this.downloadImage(url, this.downloadDirectory + filename);
                         }
                     });
                     this.updateSubredditPostIndex(subreddit, subredditPostIndex.lastPolledPosts);
@@ -218,11 +219,17 @@ export default class ReditFetchClient {
             this.addRegisteredSubreddit(subreddit);
         }
 
+        // Remove any entries that end up not having a URL
         urls = urls.filter((entry) => {
             return entry !== undefined;
         });
 
         return urls;
+    }
+
+    private checkIfFileExists(filePath: string): boolean {
+        if (fs.existsSync(filePath)) return true;
+        return false;
     }
 
     /** Parse a direct image link from an imgur URL
