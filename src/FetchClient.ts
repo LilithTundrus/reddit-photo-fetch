@@ -104,7 +104,8 @@ export default class ReditFetchClient {
                             let splitURLName = url.split('/');
                             let filename: string = splitURLName[splitURLName.length - 1];
 
-                            return this.downloadImage(url, this.downloadDirectory + filename);
+                            // Download the image, sending the filename as a legal file that can be written
+                            return this.downloadImage(url, this.downloadDirectory + filename.replace(/[|&;$%@"<>()+,]/g, ""));
                         }
                     });
                     this.updateSubredditPostIndex(subreddit, subredditPostIndex.lastPolledPosts);
