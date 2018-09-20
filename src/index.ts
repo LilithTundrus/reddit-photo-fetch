@@ -30,6 +30,8 @@ let wrapper = new snoowrap({
 // Template for creating a new fetchclient in the code below
 let rfc: ReditFetchClient;
 
+// TODO: Fix some files getting corrupted!
+
 // If there's an argument present (ignoring the first 2 indeces of `node` and `index.js`)
 if (process.argv[2]) {
     // Make sure that the directory exists
@@ -46,7 +48,8 @@ if (process.argv[2]) {
 
 rfc.getNewRedditURLs();
 
-// Helper functions go here
+
+// Helper functions
 
 /** Read the config file for the script/project
  * @returns {string}
