@@ -99,12 +99,15 @@ export default class ReditFetchClient {
                             // Update the array for the current subreddit with the current URL
                             subredditPostIndex.lastPolledPosts.push(url);
 
-                            console.log(`Downloading image: ${url}`);
                             // Get the image and download it, spliting the URL by its forward slash to get a valid filename
                             let splitURLName = url.split('/');
                             let filename: string = splitURLName[splitURLName.length - 1];
 
-                            return this.downloadImage(url, this.downloadDirectory + filename);
+                            console.log(`Downloading image: ${url} as ${filename}`);
+
+
+                            // Download the image, sending the filename as a legal file that can be written
+                            return this.downloadImage(url, this.downloadDirectory + filename.replace(/[|?&;$%@"<>()+,]/g, ""));
                         }
                     });
                     this.updateSubredditPostIndex(subreddit, subredditPostIndex.lastPolledPosts);

@@ -30,6 +30,14 @@ let wrapper = new snoowrap({
 // Template for creating a new fetchclient in the code below
 let rfc: ReditFetchClient;
 
+// TODO: Fix some files getting corrupted!
+// TODO: allow for a hot vs new filter for getting 'new' photos
+// TODO: document the config file
+// TODO: make sure without imgur the app still works
+// TODO: re-add the filename checking, make sure before an image is downloaded that it does
+// not already exist with the same file size
+// TODO: create a scheduling system for this script
+
 // If there's an argument present (ignoring the first 2 indeces of `node` and `index.js`)
 if (process.argv[2]) {
     // Make sure that the directory exists
@@ -46,7 +54,8 @@ if (process.argv[2]) {
 
 rfc.getNewRedditURLs();
 
-// Helper functions go here
+
+// Helper functions
 
 /** Read the config file for the script/project
  * @returns {string}
