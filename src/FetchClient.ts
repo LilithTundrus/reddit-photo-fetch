@@ -107,7 +107,7 @@ export default class ReditFetchClient {
 
 
                             // Download the image, sending the filename as a legal file that can be written
-                            return this.downloadImage(url, this.downloadDirectory + filename.replace(/[|&;$%@"<>()+,]/g, ""));
+                            return this.downloadImage(url, this.downloadDirectory + filename.replace(/[|?&;$%@"<>()+,]/g, ""));
                         }
                     });
                     this.updateSubredditPostIndex(subreddit, subredditPostIndex.lastPolledPosts);
