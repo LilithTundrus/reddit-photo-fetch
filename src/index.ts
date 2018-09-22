@@ -31,6 +31,11 @@ let wrapper = new snoowrap({
 let rfc: ReditFetchClient;
 
 // TODO: Fix some files getting corrupted!
+// TODO: allow for a hot vs new filter for getting 'new' photos
+// TODO: document the config file
+// TODO: make sure without imgur the app still works
+// TODO: re-add the filename checking, make sure before an image is downloaded that it does
+// not already exist with the same file size
 
 // If there's an argument present (ignoring the first 2 indeces of `node` and `index.js`)
 if (process.argv[2]) {
