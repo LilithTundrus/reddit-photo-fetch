@@ -10,6 +10,7 @@ __NOTE:__ Optionally, you can supply an imgur API client/secret in the config fi
 The main stumbling block with Reddit's API is that is requires oauth, which isn't simple to understand or to set up if you're relatively new. Hopefully this guide at least points you the right way to get you started!
 
 
+
 ### Creating a Reddit 'App'
 
 
@@ -76,6 +77,7 @@ let wrapper = new snoowrap({
 8. Now you're ready to go! :D
 
 
+
 ### Setting up an OAuth2 Server (Node.js)
 
 Prerequisates:
@@ -121,3 +123,9 @@ https.createServer(options, app).listen(443);
 8. Save the file as `app.js` in the `oauthserver` folder
 9. In the same directory, run the script by typing `node app.js`
 10. The app should now be running and accepting GET requests
+
+
+
+### Setting up your config file for __this__ project
+
+PH
