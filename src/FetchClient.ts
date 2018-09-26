@@ -210,6 +210,7 @@ export default class ReditFetchClient {
                     let parsedUrl = await this.parseImgurImageFromLink(entry.url).then((url) => {
                         return url;
                     })
+                        .catch((err) => console.log(err))
                     return parsedUrl;
                 } else {
                     console.log('Invalid image link: ' + entry.url);
@@ -250,6 +251,7 @@ export default class ReditFetchClient {
             try {
                 responseData = JSON.parse(data);
             } catch (e) {
+                console.log(data);
                 throw new Error(e);
             }
 

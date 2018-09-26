@@ -36,6 +36,10 @@ export default class ImgurWrapper {
             request.get(`${this.baseImgurURL}image/${parsedImageID}`, {
                 headers: this.headers
             }, (err, res, body: string) => {
+                if (res.statusCode == 400) {
+                    console.log(`400 Error:`, res.headers, res.body);
+                    reject();
+                }
                 // Make sure nothing went wrong with the request
                 if (err) reject(err);
 
