@@ -128,4 +128,20 @@ https.createServer(options, app).listen(443);
 
 ### Setting up your config file for __this__ project
 
-PH
+The config file for this script should look something like this:
+
+```json
+  "imgurClientID": "YOUR_IMGUR_CLIENT_ID",
+  "imgureSecret": "IMGUR_SECRET",
+  "imgurBaseURL": "https://api.imgur.com/3/",
+  "redditClientID": "REDDIT_CLIENT_ID",
+  "redditRedirectURL": "aaaaaaaaaaaaaa",
+  "redditSecret": "aaaaaaaaaaa",
+  "redditUserAgent": "aaaaaaaaaaa",
+  "redditAccessToken": "aaaaaaaaaaa",
+  "redditRefreshToken": "aaaaaaaaaaaaaaaa",
+  "redditUpvoteThreshold": 25,
+  "subreddits": [
+"aww"
+  ],
+```
